@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Font;
 
@@ -5,7 +6,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -15,16 +15,16 @@ import javax.swing.JOptionPane;
 import java.awt.event.ActionListener;
 import java.awt.print.PrinterException;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
+import javax.swing.JScrollPane;
 
-public class Editor extends JFrame {
+public class texteditor extends JFrame {
 
 	private JPanel contentPane;
-	private final JScrollPane scrollPane = new JScrollPane();
 
 	/**
 	 * Launch the application.
@@ -33,7 +33,7 @@ public class Editor extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Editor frame = new Editor();
+					texteditor frame = new texteditor();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -45,67 +45,72 @@ public class Editor extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Editor() {
+	public texteditor() {
 		setResizable(false);
 		setTitle("Editor");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1148, 613);
+		setBounds(100, 100, 1062, 658);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		scrollPane.setBounds(10, 0, 1124, 576);
-		contentPane.add(scrollPane);
-		
-		JTextArea text = new JTextArea();
-		scrollPane.setViewportView(text);
 		Font f=new Font("Arial",Font.BOLD,17);
-		text.setFont(f);
-				
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(4, 1, 1037, 593);
+		contentPane.add(scrollPane);
+		JTextArea textArea = new JTextArea();
+		scrollPane.setViewportView(textArea);
+		textArea.setFont(f);
 		JMenuBar menuBar = new JMenuBar();
-		scrollPane.setColumnHeaderView(menuBar);
+		setJMenuBar(menuBar);
 		
-		JMenu FILE = new JMenu("FILE");
-		menuBar.add(FILE);
+		JMenu mnNewMenu = new JMenu("FILE");
+		menuBar.add(mnNewMenu);
 		
-		JMenuItem NEW = new JMenuItem("NEW");
-		NEW.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem = new JMenuItem("NEW");
+		mntmNewMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				text.setText("");
-			}
-		});
-		FILE.add(NEW);
-		
-		JMenuItem OPEN = new JMenuItem("OPEN");
-		OPEN.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser ch= new JFileChooser();
-				ch.showOpenDialog(null);
-				File f=ch.getSelectedFile();
-				String fn=f.getAbsolutePath();
+				textArea.setText("");
 				
-				try {
-					
-					FileReader reader = new FileReader(fn);
-					BufferedReader br =new BufferedReader(reader);
-					text.read(br,null);
-					br.close();
-					text.requestFocus();
-					
-				}catch(Exception e1) {
-					JOptionPane.showMessageDialog(null,e1);
-				};
 			}
 		});
-		FILE.add(OPEN);
+		mnNewMenu.add(mntmNewMenuItem);
 		
-		JMenuItem SAVE = new JMenuItem("SAVE");
-		SAVE.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("OPEN");
+		mntmNewMenuItem_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser j = new JFileChooser(); 
+	            int r = j.showOpenDialog(null); 
+	            if (r == JFileChooser.APPROVE_OPTION) {  
+	                File fi = new File(j.getSelectedFile().getAbsolutePath()); 
+	  
+	                try {  
+	                    String s1 = "", sl = "";  
+	                    FileReader fr = new FileReader(fi); 
+	  
+	                    BufferedReader br = new BufferedReader(fr);  
+	                    sl = br.readLine(); 
+	                    while ((s1 = br.readLine()) != null) { 
+	                        sl = sl + "\n" + s1; 
+	                    } 
+	
+	                    textArea.setText(sl); 
+	                } 
+	                catch (Exception evt) { 
+	                    JOptionPane.showMessageDialog(null, evt.getMessage()); 
+	                } 
+	            } 
+			}
+		});
+		mnNewMenu.add(mntmNewMenuItem_1);
+		
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("SAVE");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser ch=new JFileChooser();
 				int res=ch.showSaveDialog(null);
 				if(res==JFileChooser.APPROVE_OPTION) {
-					String content=text.getText();
+					String content=textArea.getText();
 					File f=ch.getSelectedFile();
 					try {
 						FileWriter fw=new FileWriter(f.getPath());
@@ -118,56 +123,101 @@ public class Editor extends JFrame {
 				}
 			}
 		});
-		FILE.add(SAVE);
+		mnNewMenu.add(mntmNewMenuItem_2);
 		
-		JMenuItem EXIT = new JMenuItem("EXIT");
-		EXIT.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_3 = new JMenuItem("EXIT");
+		mntmNewMenuItem_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
-		FILE.add(EXIT);
+		mnNewMenu.add(mntmNewMenuItem_3);
 		
-		JMenu EDIT = new JMenu("EDIT");
-		menuBar.add(EDIT);
+		JMenu mnNewMenu_1 = new JMenu("EDIT");
+		menuBar.add(mnNewMenu_1);
 		
-		JMenuItem CUT = new JMenuItem("CUT       Ctrl+X");
-		CUT.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_4 = new JMenuItem("CUT");
+		mntmNewMenuItem_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				text.cut();
+				textArea.cut();
 			}
 		});
-		EDIT.add(CUT);
+		mnNewMenu_1.add(mntmNewMenuItem_4);
 		
-		JMenuItem COPY = new JMenuItem("COPY    Ctrl+C");
-		COPY.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_5 = new JMenuItem("COPY");
+		mntmNewMenuItem_5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				text.copy();
+				textArea.copy();
 			}
 		});
-		EDIT.add(COPY);
+		mnNewMenu_1.add(mntmNewMenuItem_5);
 		
-		JMenuItem PASTE = new JMenuItem("PASTE   Ctrl+V");
-		PASTE.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_6 = new JMenuItem("PASTE");
+		mntmNewMenuItem_6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				text.paste();
+				textArea.paste();
 			}
 		});
-		EDIT.add(PASTE);
+		mnNewMenu_1.add(mntmNewMenuItem_6);
 		
-		JMenu mnNewMenu = new JMenu("PRINT");
-		menuBar.add(mnNewMenu);
+		JMenu mnNewMenu_2 = new JMenu("PRINT");
+		menuBar.add(mnNewMenu_2);
 		
-		JMenuItem mntmNewMenuItem = new JMenuItem("Print");
-		mntmNewMenuItem.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_7 = new JMenuItem("PRINT");
+		mntmNewMenuItem_7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					text.print();
+					textArea.print();
 				} catch (PrinterException e1) {
-					JOptionPane.showMessageDialog(null,e1);
+					e1.printStackTrace();
 				}
 			}
 		});
-		mnNewMenu.add(mntmNewMenuItem);
+		mnNewMenu_2.add(mntmNewMenuItem_7);
+		
+		JMenu mnNewMenu_3 = new JMenu("LANGUAGES");
+		menuBar.add(mnNewMenu_3);
+		
+		JMenuItem mntmNewMenuItem_8 = new JMenuItem("C");
+		mntmNewMenuItem_8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textArea.setText("#include <stdio.h>\nmain()\n{\n\n\n}");
+			}
+		});
+		mnNewMenu_3.add(mntmNewMenuItem_8);
+		
+		JMenuItem mntmNewMenuItem_9 = new JMenuItem("C++");
+		mntmNewMenuItem_9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textArea.setText("#include <iostream.h>\nint main()\n{\n\n\n}");
+			}
+		});
+		mnNewMenu_3.add(mntmNewMenuItem_9);
+		
+		JMenuItem mntmNewMenuItem_10 = new JMenuItem("JAVA");
+		mntmNewMenuItem_10.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textArea.setText("class Solution\n{\n\tpublic static void main(String args[])\n\t{\n\n\n\t}\n}");
+			}
+		});
+		mnNewMenu_3.add(mntmNewMenuItem_10);
+		
+		JMenu mnNewMenu_4 = new JMenu("CMD");
+		menuBar.add(mnNewMenu_4);
+		
+		JMenuItem mntmNewMenuItem_11 = new JMenuItem("OPEN CMD");
+		mntmNewMenuItem_11.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Runtime.getRuntime().exec(new String[] {"cmd", "/k","start"});
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		mnNewMenu_4.add(mntmNewMenuItem_11);
+		
+		
+		
 	}
 }
